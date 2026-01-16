@@ -1,5 +1,5 @@
 pipeline {
-  agent any
+  agent none
   stages {
     stage('Build') {
       parallel {
@@ -8,22 +8,35 @@ pipeline {
             sh '''#!/usr/bin/env bash
 
 echo "Demo"'''
+            mail(subject: 'test', body: 'test', bcc: 'yitong.bai@qq.com', cc: 'yitong.bai@qq.com', from: 'yitong.bai@qq.com', replyTo: 'yitong.bai@qq.com', to: 'yitong.bai@qq.com')
           }
         }
 
         stage('Build OSX') {
           steps {
             sleep 45
+            bat 'fasdf'
+          }
+        }
+
+        stage('Build MSI') {
+          steps {
+            build 'kubespray'
           }
         }
 
       }
     }
 
-    stage('Aritifacts') {
+    stage('Upload') {
       steps {
-        fingerprint(defaultExcludes: true, targets: 'bin/server')
-        archiveArtifacts 'bin/server'
+        archiveArtifacts 'bin/app'
+      }
+    }
+
+    stage('Finished') {
+      steps {
+        waitForBuild '${RunID}'
       }
     }
 
